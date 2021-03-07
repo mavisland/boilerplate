@@ -20,6 +20,7 @@ const rename = require("gulp-rename");
 const sass = require("gulp-sass");
 sass.compiler = require("node-sass");
 const sourcemaps = require("gulp-sourcemaps");
+const spritesmith = require("gulp.spritesmith");
 const terser = require("gulp-terser");
 const twig = require("gulp-twig");
 const zip = require("gulp-zip");
@@ -43,12 +44,16 @@ const paths = {
     },
   },
   images: {
-    input: "src/images/*.{gif,ico,jpg,png,svg}",
+    input: ["src/images/*.{gif,ico,jpg,png,svg}", "src/sprites/s.png"],
     output: "dist/images",
   },
   scripts: {
     input: ["src/js/plugins.js", "src/js/main.js"],
     output: "dist/js",
+  },
+  sprites: {
+    input: "src/sprites/**/*.svg",
+    output: "dist/images",
   },
   styles: {
     input: "src/scss/*.scss",
@@ -194,6 +199,73 @@ gulp.task(
 );
 
 /**
+ * Task: 'scripts'
+ *
+ * Concanate & minify JavaScript files
+ */
+gulp.task(
+  "scripts",
+  gulp.series(function (cb) {
+    gulp
+      .src(paths.scripts.input)
+      .pipe(sourcemaps.init())
+      .pipe(
+        babel({
+          presets: ["@babel/env"],
+        })
+      )
+      .pipe(concat("app.js"))
+      .pipe(header(banner, { pkg: pkg }))
+      .pipe(gulp.dest(paths.scripts.output))
+      .pipe(
+        terser({
+          keep_fnames: true,
+          mangle: false,
+        })
+      )
+      .pipe(
+        rename({
+          suffix: ".min",
+        })
+      )
+      .pipe(sourcemaps.write("."))
+      .pipe(gulp.dest(paths.scripts.output));
+
+    cb();
+  })
+);
+
+/**
+ * Task: 'sprites'
+ *
+ * Convert a set of images into a spritesheet and CSS variables
+ */
+gulp.task(
+  "sprites",
+  gulp.series(function (cb) {
+    var spriteData = gulp.src("src/sprites/images/*.png").pipe(
+      spritesmith({
+        imgName: "s.png",
+        cssName: "_sprites.scss",
+        cssFormat: "scss",
+        cssTemplate: "src/sprites/scss.template.handlebars",
+        imgPath: "../images/s.png",
+        padding: 3,
+        imgOpts: {
+          quality: 100,
+        },
+      })
+    );
+
+    spriteData.img.pipe(gulp.dest("src/sprites/"));
+    spriteData.css.pipe(gulp.dest("src/sprites/"));
+
+    // Callback
+    cb();
+  })
+);
+
+/**
  * Task: 'styles'
  *
  * Compile, autoprefix & minify SASS files
@@ -243,38 +315,6 @@ gulp.task(
   })
 );
 
-gulp.task(
-  "scripts",
-  gulp.series(function (cb) {
-    gulp
-      .src(paths.scripts.input)
-      .pipe(sourcemaps.init())
-      .pipe(
-        babel({
-          presets: ["@babel/env"],
-        })
-      )
-      .pipe(concat("app.js"))
-      .pipe(header(banner, { pkg: pkg }))
-      .pipe(gulp.dest(paths.scripts.output))
-      .pipe(
-        terser({
-          keep_fnames: true,
-          mangle: false,
-        })
-      )
-      .pipe(
-        rename({
-          suffix: ".min",
-        })
-      )
-      .pipe(sourcemaps.write("."))
-      .pipe(gulp.dest(paths.scripts.output));
-
-    cb();
-  })
-);
-
 /**
  * Task: 'templates'
  *
@@ -306,7 +346,11 @@ gulp.task(
   })
 );
 
-// Build Task
+/**
+ * Task: 'build'
+ *
+ * Run all tasks
+ */
 gulp.task(
   "build",
   gulp.parallel(["copy", "images", "scripts", "styles", "templates"])

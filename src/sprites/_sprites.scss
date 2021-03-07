@@ -1,0 +1,106 @@
+$github-name: 'github';
+$github-x: 0px;
+$github-y: 0px;
+$github-offset-x: 0px;
+$github-offset-y: 0px;
+$github-width: 32px;
+$github-height: 32px;
+$github-total-width: 102px;
+$github-total-height: 67px;
+$github-image: "../images/s.png";
+$github: (0px, 0px, 0px, 0px, 32px, 32px, 102px, 67px, "../images/s.png", "github");
+$linkedin-name: 'linkedin';
+$linkedin-x: 35px;
+$linkedin-y: 0px;
+$linkedin-offset-x: -35px;
+$linkedin-offset-y: 0px;
+$linkedin-width: 32px;
+$linkedin-height: 32px;
+$linkedin-total-width: 102px;
+$linkedin-total-height: 67px;
+$linkedin-image: "../images/s.png";
+$linkedin: (35px, 0px, -35px, 0px, 32px, 32px, 102px, 67px, "../images/s.png", "linkedin");
+$telegram-name: 'telegram';
+$telegram-x: 0px;
+$telegram-y: 35px;
+$telegram-offset-x: 0px;
+$telegram-offset-y: -35px;
+$telegram-width: 32px;
+$telegram-height: 32px;
+$telegram-total-width: 102px;
+$telegram-total-height: 67px;
+$telegram-image: "../images/s.png";
+$telegram: (0px, 35px, 0px, -35px, 32px, 32px, 102px, 67px, "../images/s.png", "telegram");
+$twitter-name: 'twitter';
+$twitter-x: 35px;
+$twitter-y: 35px;
+$twitter-offset-x: -35px;
+$twitter-offset-y: -35px;
+$twitter-width: 32px;
+$twitter-height: 32px;
+$twitter-total-width: 102px;
+$twitter-total-height: 67px;
+$twitter-image: "../images/s.png";
+$twitter: (35px, 35px, -35px, -35px, 32px, 32px, 102px, 67px, "../images/s.png", "twitter");
+$website-name: 'website';
+$website-x: 70px;
+$website-y: 0px;
+$website-offset-x: -70px;
+$website-offset-y: 0px;
+$website-width: 32px;
+$website-height: 32px;
+$website-total-width: 102px;
+$website-total-height: 67px;
+$website-image: "../images/s.png";
+$website: (70px, 0px, -70px, 0px, 32px, 32px, 102px, 67px, "../images/s.png", "website");
+
+$spritesheet-width: 102px;
+$spritesheet-height: 67px;
+$spritesheet-image: "../images/s.png";
+$spritesheet-sprites: (
+  $github,
+  $linkedin,
+  $telegram,
+  $twitter,
+  $website,
+);
+$spritesheet: (102px, 67px, "../images/s.png", $spritesheet-sprites);
+
+@mixin sprite-width($sprite) {
+  width: nth($sprite, 5);
+}
+@mixin sprite-height($sprite) {
+  height: nth($sprite, 6);
+}
+@mixin sprite-position($sprite) {
+  $sprite-offset-x: nth($sprite, 3);
+  $sprite-offset-y: nth($sprite, 4);
+  background-position: $sprite-offset-x $sprite-offset-y;
+}
+@mixin sprite-image($sprite) {
+  $sprite-image: nth($sprite, 9);
+  background-image: url(#{$sprite-image});
+}
+@mixin sprite($sprite) {
+  @include sprite-image($sprite);
+  @include sprite-position($sprite);
+  @include sprite-width($sprite);
+  @include sprite-height($sprite);
+}
+
+@mixin sprites($sprites) {
+  @each $sprite in $sprites {
+    $sprite-name: nth($sprite, 10);
+    .icon-#{$sprite-name} {
+      @include sprite-position($sprite);
+      @include sprite-height($sprite);
+      @include sprite-width($sprite);
+    }
+  }
+}
+
+.icon {
+  background-image: url($spritesheet-image);
+  display: inline-block;
+}
+@include sprites($spritesheet-sprites);
