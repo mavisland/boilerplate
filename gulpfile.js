@@ -1,9 +1,12 @@
 "use strict";
 
-// Packages
+//
+// PACKAGES
+//
 const gulp = require("gulp");
 const autoprefixer = require("autoprefixer");
 const babel = require("gulp-babel");
+const del = require("del");
 const fs = require("fs");
 const cleanCSS = require("gulp-clean-css");
 const concat = require("gulp-concat");
@@ -20,18 +23,9 @@ const sourcemaps = require("gulp-sourcemaps");
 const terser = require("gulp-terser");
 const twig = require("gulp-twig");
 
-// File Banner
-const banner = [
-  "/*!",
-  " * <%= pkg.name %> - <%= pkg.description %>",
-  " * @version v<%= pkg.version %>",
-  " * @link <%= pkg.homepage %>",
-  " * @license <%= pkg.license %>",
-  " */",
-  "",
-].join("\n");
-
-// Paths
+//
+// PATHS
+//
 const paths = {
   copy: {
     scripts: {
@@ -60,6 +54,41 @@ const paths = {
     output: "dist/",
   },
 };
+
+//
+// OPTIONS
+//
+
+// File Banner
+const banner = [
+  "/*!",
+  " * <%= pkg.name %> - <%= pkg.description %>",
+  " * @version v<%= pkg.version %>",
+  " * @link <%= pkg.homepage %>",
+  " * @license <%= pkg.license %>",
+  " */",
+  "",
+].join("\n");
+
+//
+// TASKS
+//
+
+/**
+ * Task: 'clean'
+ *
+ * Remove pre-existing content from output folders
+ */
+gulp.task(
+  "clean",
+  gulp.series(function (cb) {
+    // Clean the dist folder
+    del.sync(["dist/"]);
+
+    // Callback
+    cb();
+  })
+);
 
 /**
  * Task: 'copy:scripts'
@@ -94,6 +123,11 @@ gulp.task(
  */
 gulp.task("copy", gulp.parallel(["copy:scripts", "copy:styles"]));
 
+/**
+ * Task: 'images'
+ *
+ * Optimise GIF, JPEG, PNG and SVG images
+ */
 gulp.task(
   "images",
   gulp.series(function (cb) {
@@ -231,7 +265,11 @@ gulp.task(
   })
 );
 
+// Build Task
 gulp.task(
-  "default",
+  "build",
   gulp.parallel(["copy", "images", "scripts", "styles", "templates"])
 );
+
+// Default Task
+gulp.task("default", gulp.parallel(["clean", "build"]));

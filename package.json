@@ -1,6 +1,6 @@
 {
   "name": "boilerplate",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "A boilerplate for building web projects with Gulp.js.",
   "author": "Tanju Yildiz <ben@tanjuyildiz.com>",
   "license": "MIT",
@@ -31,6 +31,7 @@
     "@babel/core": "^7.13.8",
     "@babel/preset-env": "^7.13.9",
     "autoprefixer": "^9.7.6",
+    "del": "^6.0.0",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-clean-css": "^4.3.0",
