@@ -9,6 +9,7 @@ const cleanCSS = require("gulp-clean-css");
 const concat = require("gulp-concat");
 const data = require("gulp-data");
 const header = require("gulp-header");
+const imagemin = require("gulp-imagemin");
 const pkg = require("./package.json");
 const plumber = require("gulp-plumber");
 const postcss = require("gulp-postcss");
@@ -41,6 +42,10 @@ const paths = {
       input: "node_modules/normalize.css/normalize.css",
       output: "dist/css/",
     },
+  },
+  images: {
+    input: "src/images/*.{gif,ico,jpg,png,svg}",
+    output: "dist/images",
   },
   scripts: {
     input: ["src/js/plugins.js", "src/js/main.js"],
@@ -88,6 +93,30 @@ gulp.task(
  * Task: 'copy'
  */
 gulp.task("copy", gulp.parallel(["copy:scripts", "copy:styles"]));
+
+gulp.task(
+  "images",
+  gulp.series(function (cb) {
+    gulp
+      .src(paths.images.input)
+      .pipe(
+        imagemin({
+          interlaced: true,
+          progressive: true,
+          optimizationLevel: 5,
+          svgoPlugins: [
+            {
+              removeViewBox: true,
+            },
+          ],
+        })
+      )
+      .pipe(gulp.dest(paths.images.output));
+
+    // Callback
+    cb();
+  })
+);
 
 /**
  * Task: 'styles'
@@ -202,4 +231,7 @@ gulp.task(
   })
 );
 
-gulp.task("default", gulp.parallel(["copy", "scripts", "styles", "templates"]));
+gulp.task(
+  "default",
+  gulp.parallel(["copy", "images", "scripts", "styles", "templates"])
+);

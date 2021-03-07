@@ -1,6 +1,6 @@
 {
   "name": "boilerplate",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A boilerplate for building web projects with Gulp.js.",
   "author": "Tanju Yildiz <ben@tanjuyildiz.com>",
   "license": "MIT",
@@ -47,6 +47,7 @@
     "node-sass": "^5.0.0"
   },
   "dependencies": {
+    "gulp-imagemin": "^7.1.0",
     "normalize.css": "^8.0.1"
   }
 }
