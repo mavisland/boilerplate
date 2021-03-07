@@ -1,0 +1,26 @@
+{
+  "name": "boilerplate",
+  "version": "0.0.1",
+  "description": "A boilerplate for building web projects with Gulp.js.",
+  "author": "Tanju Yildiz <ben@tanjuyildiz.com>",
+  "license": "MIT",
+  "keywords": [
+    "boilerplate",
+    "gulp.js",
+    "html",
+    "css",
+    "javascript"
+  ],
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mavisland/boilerplate.git"
+  },
+  "homepage": "https://github.com/mavisland/boilerplate",
+  "bugs": {
+    "url": "https://github.com/mavisland/boilerplate/issues"
+  }
+}
