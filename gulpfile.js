@@ -5,6 +5,7 @@
 //
 const gulp = require("gulp");
 const autoprefixer = require("autoprefixer");
+const browserSync = require("browser-sync").create();
 const babel = require("gulp-babel");
 const del = require("del");
 const fs = require("fs");
@@ -50,6 +51,9 @@ const paths = {
   scripts: {
     input: ["src/js/plugins.js", "src/js/main.js"],
     output: "dist/js",
+  },
+  server: {
+    root: "dist/",
   },
   sprites: {
     input: "src/sprites/**/*.svg",
@@ -144,7 +148,12 @@ gulp.task(
   gulp.series(function (cb) {
     gulp
       .src(paths.copy.scripts.input)
-      .pipe(gulp.dest(paths.copy.scripts.output));
+      .pipe(gulp.dest(paths.copy.scripts.output))
+      .pipe(
+        browserSync.reload({
+          stream: true,
+        })
+      );
 
     // Callback
     cb();
@@ -157,7 +166,14 @@ gulp.task(
 gulp.task(
   "copy:styles",
   gulp.series(function (cb) {
-    gulp.src(paths.copy.styles.input).pipe(gulp.dest(paths.copy.styles.output));
+    gulp
+      .src(paths.copy.styles.input)
+      .pipe(gulp.dest(paths.copy.styles.output))
+      .pipe(
+        browserSync.reload({
+          stream: true,
+        })
+      );
 
     // Callback
     cb();
@@ -191,7 +207,12 @@ gulp.task(
           ],
         })
       )
-      .pipe(gulp.dest(paths.images.output));
+      .pipe(gulp.dest(paths.images.output))
+      .pipe(
+        browserSync.reload({
+          stream: true,
+        })
+      );
 
     // Callback
     cb();
@@ -229,7 +250,12 @@ gulp.task(
         })
       )
       .pipe(sourcemaps.write("."))
-      .pipe(gulp.dest(paths.scripts.output));
+      .pipe(gulp.dest(paths.scripts.output))
+      .pipe(
+        browserSync.reload({
+          stream: true,
+        })
+      );
 
     cb();
   })
@@ -308,7 +334,12 @@ gulp.task(
         })
       )
       .pipe(sourcemaps.write("."))
-      .pipe(gulp.dest(paths.styles.output));
+      .pipe(gulp.dest(paths.styles.output))
+      .pipe(
+        browserSync.reload({
+          stream: true,
+        })
+      );
 
     // Callback
     cb();
@@ -339,12 +370,30 @@ gulp.task(
         })
       )
       .pipe(twig())
-      .pipe(gulp.dest(paths.templates.output));
+      .pipe(gulp.dest(paths.templates.output))
+      .pipe(
+        browserSync.reload({
+          stream: true,
+        })
+      );
 
     // Callback
     cb();
   })
 );
+
+/**
+ * Task: 'serve'
+ *
+ * Watch for changes to the 'src' directory
+ */
+gulp.task("serve", function () {
+  browserSync.init({
+    server: {
+      baseDir: paths.server.root,
+    },
+  });
+});
 
 /**
  * Task: 'build'
@@ -357,4 +406,4 @@ gulp.task(
 );
 
 // Default Task
-gulp.task("default", gulp.parallel(["clean", "build"]));
+gulp.task("default", gulp.series(["clean", "build", gulp.parallel("serve")]));
