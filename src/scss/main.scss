@@ -1,4 +1,4 @@
-//  Base styles: opinionated defaults
+// Base styles: opinionated defaults
 html {
   color: #222;
   font-size: 1em;
@@ -38,10 +38,13 @@ textarea {
   resize: vertical;
 }
 
-//  Author's custom styles
+// Author's custom styles
+body {
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial,
+    sans-serif, Apple Color Emoji, Segoe UI Emoji;
+}
 
 // Helper classes
-
 .hidden,
 [hidden] {
   display: none !important;

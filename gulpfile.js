@@ -47,10 +47,12 @@ const paths = {
   images: {
     input: ["src/images/*.{gif,ico,jpg,png,svg}", "src/sprites/s.png"],
     output: "dist/images",
+    watch: ["src/images/*.{gif,ico,jpg,png,svg}", "src/sprites/s.png"],
   },
   scripts: {
     input: ["src/js/plugins.js", "src/js/main.js"],
     output: "dist/js",
+    watch: "src/js/**/*.js",
   },
   server: {
     root: "dist/",
@@ -62,10 +64,12 @@ const paths = {
   styles: {
     input: "src/scss/*.scss",
     output: "dist/css",
+    watch: "src/scss/**/*.scss",
   },
   templates: {
     input: "src/html/*.twig",
     output: "dist/",
+    watch: "src/html/**/*.twig",
   },
 };
 
@@ -405,5 +409,20 @@ gulp.task(
   gulp.parallel(["copy", "images", "scripts", "styles", "templates"])
 );
 
+/**
+ * Task: 'watch'
+ *
+ * Watch all file changes
+ */
+gulp.task("watch", function () {
+  gulp.watch(paths.images.watch, gulp.series("images"));
+  gulp.watch(paths.scripts.watch, gulp.series("scripts"));
+  gulp.watch(paths.styles.watch, gulp.series("styles"));
+  gulp.watch(paths.templates.watch, gulp.series("templates"));
+});
+
 // Default Task
-gulp.task("default", gulp.series(["clean", "build", gulp.parallel("serve")]));
+gulp.task(
+  "default",
+  gulp.series(["clean", "build", gulp.parallel("watch", "serve")])
+);
