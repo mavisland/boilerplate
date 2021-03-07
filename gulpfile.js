@@ -3,8 +3,10 @@
 // Packages
 const gulp = require("gulp");
 const autoprefixer = require("autoprefixer");
+const babel = require("gulp-babel");
 const fs = require("fs");
 const cleanCSS = require("gulp-clean-css");
+const concat = require("gulp-concat");
 const data = require("gulp-data");
 const header = require("gulp-header");
 const pkg = require("./package.json");
@@ -14,6 +16,7 @@ const rename = require("gulp-rename");
 const sass = require("gulp-sass");
 sass.compiler = require("node-sass");
 const sourcemaps = require("gulp-sourcemaps");
+const terser = require("gulp-terser");
 const twig = require("gulp-twig");
 
 // File Banner
@@ -30,10 +33,18 @@ const banner = [
 // Paths
 const paths = {
   copy: {
+    scripts: {
+      input: "src/vendor/modernizr-3.11.2.min.js",
+      output: "dist/js/",
+    },
     styles: {
       input: "node_modules/normalize.css/normalize.css",
       output: "dist/css/",
     },
+  },
+  scripts: {
+    input: ["src/js/plugins.js", "src/js/main.js"],
+    output: "dist/js",
   },
   styles: {
     input: "src/scss/*.scss",
@@ -44,6 +55,21 @@ const paths = {
     output: "dist/",
   },
 };
+
+/**
+ * Task: 'copy:scripts'
+ */
+gulp.task(
+  "copy:scripts",
+  gulp.series(function (cb) {
+    gulp
+      .src(paths.copy.scripts.input)
+      .pipe(gulp.dest(paths.copy.scripts.output));
+
+    // Callback
+    cb();
+  })
+);
 
 /**
  * Task: 'copy:styles'
@@ -61,7 +87,7 @@ gulp.task(
 /**
  * Task: 'copy'
  */
-gulp.task("copy", gulp.parallel(["copy:styles"]));
+gulp.task("copy", gulp.parallel(["copy:scripts", "copy:styles"]));
 
 /**
  * Task: 'styles'
@@ -113,6 +139,38 @@ gulp.task(
   })
 );
 
+gulp.task(
+  "scripts",
+  gulp.series(function (cb) {
+    gulp
+      .src(paths.scripts.input)
+      .pipe(sourcemaps.init())
+      .pipe(
+        babel({
+          presets: ["@babel/env"],
+        })
+      )
+      .pipe(concat("app.js"))
+      .pipe(header(banner, { pkg: pkg }))
+      .pipe(gulp.dest(paths.scripts.output))
+      .pipe(
+        terser({
+          keep_fnames: true,
+          mangle: false,
+        })
+      )
+      .pipe(
+        rename({
+          suffix: ".min",
+        })
+      )
+      .pipe(sourcemaps.write("."))
+      .pipe(gulp.dest(paths.scripts.output));
+
+    cb();
+  })
+);
+
 /**
  * Task: 'templates'
  *
@@ -144,4 +202,4 @@ gulp.task(
   })
 );
 
-gulp.task("default", gulp.parallel(["copy", "styles", "templates"]));
+gulp.task("default", gulp.parallel(["copy", "scripts", "styles", "templates"]));
