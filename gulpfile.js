@@ -22,11 +22,16 @@ sass.compiler = require("node-sass");
 const sourcemaps = require("gulp-sourcemaps");
 const terser = require("gulp-terser");
 const twig = require("gulp-twig");
+const zip = require("gulp-zip");
 
 //
 // PATHS
 //
 const paths = {
+  archive: {
+    input: "dist/**",
+    output: "build/",
+  },
   copy: {
     scripts: {
       input: "src/vendor/modernizr-3.11.2.min.js",
@@ -71,8 +76,44 @@ const banner = [
 ].join("\n");
 
 //
+// HELPER FUNCTIONS
+//
+
+// Get Timestamp
+function getTimestamp() {
+  var date = new Date();
+  var year = date.getFullYear().toString();
+  var month = ("0" + (date.getMonth() + 1)).slice(-2);
+  var day = ("0" + date.getDate()).slice(-2);
+  var hour = ("0" + date.getHours().toString()).slice(-2);
+  var minute = ("0" + date.getMinutes().toString()).slice(-2);
+  var second = ("0" + date.getSeconds().toString()).slice(-2);
+  return year + month + day + hour + minute + second;
+}
+
+//
 // TASKS
 //
+
+/**
+ * Task: 'archive'
+ *
+ * Archive pre-existing content from output folders
+ */
+gulp.task(
+  "archive",
+  gulp.series(function (cb) {
+    gulp
+      .src(paths.archive.input)
+      .pipe(
+        zip(pkg.name + "_v" + pkg.version + "-build_" + getTimestamp() + ".zip")
+      )
+      .pipe(gulp.dest(paths.archive.output));
+
+    // Signal completion
+    cb();
+  })
+);
 
 /**
  * Task: 'clean'
