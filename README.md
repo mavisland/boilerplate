@@ -46,7 +46,7 @@ Add your source files to the appropriate `src` subdirectories. Gulp.js will proc
 
 ### Styles
 
-Files in the `src/styles` directory will be compiled to `dist/css`.
+Files in the `src/scss` directory will be compiled to `dist/css`.
 
 ### Scripts
 
@@ -75,14 +75,14 @@ Converts a series of images in the `src/sprites/image` folder to a sprite sheet 
 | images    | Optimise GIF, JPEG, PNG and SVG images          |
 | serve     | Watch for changes to the `src` directory        |
 | scripts   | Concanate & minify JavaScript files             |
-| sprites   | Your images, icons, et al Convert a spritesheet |
+| sprites   | Your images, icons, et al convert a spritesheet |
 | styles    | Compile, autoprefix & minify SASS files         |
-| templates | Render Nunjucks templates                       |
+| templates | Render Twig templates                           |
 | watch     | Watch all file changes                          |
 
 ### Paths
 
-Adjust the `input`, `output`, `watch` paths for all of the Gulp tasks under the `paths` variable. Paths are relative to the root project folder.
+Adjust the `input`, `output`, `watch` paths for all of the Gulp.js tasks under the `paths` variable. Paths are relative to the root project folder.
 
 ```js
 // Paths

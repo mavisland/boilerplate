@@ -1,0 +1,42 @@
+// Typography
+// ----------------------------------------------------------------------------
+
+body {
+  font-family: $font-family;
+  font-size: $font-size;
+  line-height: $font-line-height;
+}
+
+a {
+  color: #cf4647;
+  text-decoration: none;
+  transition: all 0.2s;
+
+  @include hover-focus {
+    color: darken(#cf4647, 0);
+    text-decoration: underline;
+  }
+}
+
+.list-inline {
+  list-style: none;
+  padding-left: 0;
+
+  > li {
+    display: inline-block;
+
+    > a {
+      display: block;
+      transition: all 0.25s;
+
+      &:hover {
+        opacity: 0.85;
+        transform: scale(0.85);
+      }
+    }
+
+    + li {
+      margin-left: 5px;
+    }
+  }
+}

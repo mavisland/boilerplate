@@ -1,3 +1,5 @@
 {
-  "title": "Gulp.js Boilerplate"
+  "title": "Gulp.js Boilerplate",
+  "desc": "A boilerplate for building web projects with Gulp.js.",
+  "author": "Tanju Yildiz"
 }

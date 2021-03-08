@@ -1,0 +1,64 @@
+// Header
+// ----------------------------------------------------------------------------
+
+.header {
+  background-color: #cf4647;
+  color: #fff;
+  min-height: 50px;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  width: 100%;
+}
+
+.navbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  color: #fff;
+  display: inline-block;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: (30 / 20);
+  text-decoration: none;
+  white-space: nowrap;
+
+  @include hover-focus {
+    color: darken(#fff, 5%);
+  }
+}
+
+.menu-wrapper {
+  @include breakpoint(desktop) {
+    display: flex;
+    flex-basis: auto;
+    flex-direction: row;
+    margin-left: auto;
+  }
+}
+
+.menu {
+  list-style: none;
+}
+
+.menu-item {
+  display: inline-block;
+
+  > a {
+    color: #fff;
+    display: block;
+    font-size: 16px;
+    line-height: (30 / 16);
+    padding-left: 5px;
+    padding-right: 5px;
+    text-decoration: none;
+    text-transform: uppercase;
+
+    @include hover-focus {
+      color: darken(#fff, 5%);
+    }
+  }
+}
