@@ -39,10 +39,6 @@ const paths = {
       input: "src/vendor/modernizr-3.11.2.min.js",
       output: "dist/js/",
     },
-    styles: {
-      input: "node_modules/normalize.css/normalize.css",
-      output: "dist/css/",
-    },
   },
   images: {
     input: ["src/images/*.{gif,ico,jpg,png,svg}", "src/sprites/s.png"],
