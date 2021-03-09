@@ -91,12 +91,6 @@ const paths = {
     input: "dist/**",
     output: "build/",
   },
-  copy: {
-    scripts: {
-      input: "src/vendor/modernizr-3.11.2.min.js",
-      output: "dist/js/",
-    },
-  },
   images: {
     input: ["src/images/*.{gif,ico,jpg,png,svg}", "src/sprites/s.png"],
     output: "dist/images",

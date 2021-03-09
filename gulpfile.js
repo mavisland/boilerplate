@@ -34,12 +34,6 @@ const paths = {
     input: "dist/**",
     output: "build/",
   },
-  copy: {
-    scripts: {
-      input: "src/vendor/modernizr-3.11.2.min.js",
-      output: "dist/js/",
-    },
-  },
   images: {
     input: ["src/images/*.{gif,ico,jpg,png,svg}", "src/sprites/s.png"],
     output: "dist/images",
@@ -139,51 +133,6 @@ gulp.task(
     cb();
   })
 );
-
-/**
- * Task: 'copy:scripts'
- */
-gulp.task(
-  "copy:scripts",
-  gulp.series(function (cb) {
-    gulp
-      .src(paths.copy.scripts.input)
-      .pipe(gulp.dest(paths.copy.scripts.output))
-      .pipe(
-        browserSync.reload({
-          stream: true,
-        })
-      );
-
-    // Callback
-    cb();
-  })
-);
-
-/**
- * Task: 'copy:styles'
- */
-gulp.task(
-  "copy:styles",
-  gulp.series(function (cb) {
-    gulp
-      .src(paths.copy.styles.input)
-      .pipe(gulp.dest(paths.copy.styles.output))
-      .pipe(
-        browserSync.reload({
-          stream: true,
-        })
-      );
-
-    // Callback
-    cb();
-  })
-);
-
-/**
- * Task: 'copy'
- */
-gulp.task("copy", gulp.parallel(["copy:scripts", "copy:styles"]));
 
 /**
  * Task: 'images'
