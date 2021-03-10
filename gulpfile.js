@@ -35,14 +35,14 @@ const paths = {
     output: "build/",
   },
   images: {
-    input: ["src/images/*.{gif,ico,jpg,png,svg}", "src/sprites/s.png"],
+    input: ["src/images/*.{gif,ico,jpg,png,svg}"],
     output: "dist/images",
-    watch: ["src/images/*.{gif,ico,jpg,png,svg}", "src/sprites/s.png"],
+    watch: ["src/images/*.{gif,ico,jpg,png,svg}"],
   },
   scripts: {
-    input: ["src/js/plugins.js", "src/js/main.js"],
+    input: "src/scripts/app.js",
     output: "dist/js",
-    watch: "src/js/**/*.js",
+    watch: "src/scripts/**/*.js",
   },
   server: {
     root: "dist/",
@@ -52,14 +52,14 @@ const paths = {
     output: "dist/images",
   },
   styles: {
-    input: "src/scss/*.scss",
+    input: "src/styles/*.scss",
     output: "dist/css",
-    watch: "src/scss/**/*.scss",
+    watch: "src/styles/**/*.scss",
   },
   templates: {
-    input: "src/html/*.twig",
+    input: "src/templates/*.twig",
     output: "dist/",
-    watch: "src/html/**/*.twig",
+    watch: ["src/templates/**/*.twig", "website.json"],
   },
 };
 
@@ -315,7 +315,7 @@ gulp.task(
       )
       .pipe(
         data(function (file) {
-          return JSON.parse(fs.readFileSync("boilerplate.json"));
+          return JSON.parse(fs.readFileSync("website.json"));
         })
       )
       .pipe(twig())
@@ -349,10 +349,7 @@ gulp.task("serve", function () {
  *
  * Run all tasks
  */
-gulp.task(
-  "build",
-  gulp.parallel(["copy", "images", "scripts", "styles", "templates"])
-);
+gulp.task("build", gulp.parallel(["images", "scripts", "styles", "templates"]));
 
 /**
  * Task: 'watch'
