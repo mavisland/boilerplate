@@ -1,9 +1,5 @@
-"use strict";
-
-//
-// PACKAGES
-//
-const gulp = require("gulp");
+// Packages
+const { src, dest, series, parallel, watch } = require("gulp");
 const autoprefixer = require("autoprefixer");
 const browserSync = require("browser-sync").create();
 const babel = require("gulp-babel");
@@ -12,6 +8,7 @@ const fs = require("fs");
 const cleanCSS = require("gulp-clean-css");
 const concat = require("gulp-concat");
 const data = require("gulp-data");
+const gulpif = require("gulp-if");
 const header = require("gulp-header");
 const imagemin = require("gulp-imagemin");
 const pkg = require("./package.json");
@@ -26,18 +23,17 @@ const terser = require("gulp-terser");
 const twig = require("gulp-twig");
 const zip = require("gulp-zip");
 
-//
-// PATHS
-//
+// Paths
 const paths = {
   archive: {
     input: "dist/**",
     output: "build/",
   },
+  clean: ["dist/"],
   images: {
-    input: ["src/images/*.{gif,ico,jpg,png,svg}"],
+    input: "src/images/*",
     output: "dist/images",
-    watch: ["src/images/*.{gif,ico,jpg,png,svg}"],
+    watch: "src/images/*",
   },
   scripts: {
     input: "src/scripts/app.js",
@@ -48,8 +44,8 @@ const paths = {
     root: "dist/",
   },
   sprites: {
-    input: "src/sprites/**/*.svg",
-    output: "dist/images",
+    input: "src/sprites/images/*.png",
+    output: "src/images/",
   },
   styles: {
     input: "src/styles/*.scss",
@@ -63,9 +59,67 @@ const paths = {
   },
 };
 
-//
-// OPTIONS
-//
+// Options
+const options = {
+  images: {
+    minify: {
+      interlaced: true,
+      progressive: true,
+      optimizationLevel: 5,
+      svgoPlugins: [
+        {
+          removeViewBox: true,
+        },
+      ],
+    },
+  },
+  scripts: {
+    babel: {
+      presets: ["@babel/env"],
+    },
+    filename: "app.js",
+    minify: {
+      keep_fnames: true,
+      mangle: false,
+    },
+    rename: {
+      suffix: ".min",
+    },
+  },
+  sprites: {
+    imgName: "s.png",
+    cssName: "_sprites.scss",
+    cssFormat: "scss",
+    cssTemplate: "src/sprites/scss.template.handlebars",
+    imgPath: "../images/s.png",
+    padding: 3,
+    imgOpts: {
+      quality: 100,
+    },
+  },
+  styles: {
+    scss: {
+      outputStyle: "expanded",
+    },
+    autoprefixer: {
+      browsers: pkg.browserlist,
+      cascade: false,
+    },
+    minify: {
+      level: {
+        1: {
+          specialComments: 0,
+        },
+      },
+    },
+    rename: {
+      suffix: ".min",
+    },
+  },
+  templates: {
+    data: "website.json",
+  },
+};
 
 // File Banner
 const banner = [
@@ -78,293 +132,140 @@ const banner = [
   "",
 ].join("\n");
 
-//
-// HELPER FUNCTIONS
-//
-
 // Get Timestamp
-function getTimestamp() {
-  var date = new Date();
-  var year = date.getFullYear().toString();
-  var month = ("0" + (date.getMonth() + 1)).slice(-2);
-  var day = ("0" + date.getDate()).slice(-2);
-  var hour = ("0" + date.getHours().toString()).slice(-2);
-  var minute = ("0" + date.getMinutes().toString()).slice(-2);
-  var second = ("0" + date.getSeconds().toString()).slice(-2);
+const getTimestamp = () => {
+  let date = new Date();
+  let year = date.getFullYear().toString();
+  let month = ("0" + (date.getMonth() + 1)).slice(-2);
+  let day = ("0" + date.getDate()).slice(-2);
+  let hour = ("0" + date.getHours().toString()).slice(-2);
+  let minute = ("0" + date.getMinutes().toString()).slice(-2);
+  let second = ("0" + date.getSeconds().toString()).slice(-2);
   return year + month + day + hour + minute + second;
-}
+};
 
-//
-// TASKS
-//
+// Archive pre-existing content from output folders
+const archiveDist = (cb) => {
+  src(paths.archive.input)
+    .pipe(
+      zip(pkg.name + "_v" + pkg.version + "-build_" + getTimestamp() + ".zip")
+    )
+    .pipe(dest(paths.archive.output));
+  return cb();
+};
 
-/**
- * Task: 'archive'
- *
- * Archive pre-existing content from output folders
- */
-gulp.task(
-  "archive",
-  gulp.series(function (cb) {
-    gulp
-      .src(paths.archive.input)
-      .pipe(
-        zip(pkg.name + "_v" + pkg.version + "-build_" + getTimestamp() + ".zip")
-      )
-      .pipe(gulp.dest(paths.archive.output));
+// Remove pre-existing content from output folders
+const cleanDist = (cb) => {
+  del.sync(paths.clean);
+  return cb();
+};
 
-    // Signal completion
-    cb();
-  })
-);
+// Optimise GIF, JPEG, PNG and SVG images
+const buildImages = () => {
+  return src(paths.images.input)
+    .pipe(plumber())
+    .pipe(imagemin(options.images.minify))
+    .pipe(dest(paths.images.output));
+};
 
-/**
- * Task: 'clean'
- *
- * Remove pre-existing content from output folders
- */
-gulp.task(
-  "clean",
-  gulp.series(function (cb) {
-    // Clean the dist folder
-    del.sync(["dist/"]);
+// Concanate & minify JavaScript files
+const buildScripts = () => {
+  return src(paths.scripts.input)
+    .pipe(plumber())
+    .pipe(gulpif(process.env.NODE_ENV === "development", sourcemaps.init()))
+    .pipe(babel(options.scripts.babel))
+    .pipe(concat(options.scripts.filename))
+    .pipe(header(banner, { pkg: pkg }))
+    .pipe(dest(paths.scripts.output))
+    .pipe(terser(options.scripts.minify))
+    .pipe(rename(options.scripts.rename))
+    .pipe(gulpif(process.env.NODE_ENV === "development", sourcemaps.write(".")))
+    .pipe(dest(paths.scripts.output));
+};
 
-    // Callback
-    cb();
-  })
-);
+// Convert a set of images into a spritesheet and CSS variables
+const buildSprites = (cb) => {
+  const spriteData = gulp
+    .src(paths.sprites.input)
+    .pipe(plumber())
+    .pipe(spritesmith(options.sprites));
 
-/**
- * Task: 'images'
- *
- * Optimise GIF, JPEG, PNG and SVG images
- */
-gulp.task(
-  "images",
-  gulp.series(function (cb) {
-    gulp
-      .src(paths.images.input)
-      .pipe(
-        imagemin({
-          interlaced: true,
-          progressive: true,
-          optimizationLevel: 5,
-          svgoPlugins: [
-            {
-              removeViewBox: true,
-            },
-          ],
-        })
-      )
-      .pipe(gulp.dest(paths.images.output))
-      .pipe(
-        browserSync.reload({
-          stream: true,
-        })
-      );
+  spriteData.img.pipe(dest(paths.sprites.output));
+  spriteData.css.pipe(dest(paths.sprites.output));
 
-    // Callback
-    cb();
-  })
-);
+  return cb();
+};
 
-/**
- * Task: 'scripts'
- *
- * Concanate & minify JavaScript files
- */
-gulp.task(
-  "scripts",
-  gulp.series(function (cb) {
-    gulp
-      .src(paths.scripts.input)
-      .pipe(sourcemaps.init())
-      .pipe(
-        babel({
-          presets: ["@babel/env"],
-        })
-      )
-      .pipe(concat("app.js"))
-      .pipe(header(banner, { pkg: pkg }))
-      .pipe(gulp.dest(paths.scripts.output))
-      .pipe(
-        terser({
-          keep_fnames: true,
-          mangle: false,
-        })
-      )
-      .pipe(
-        rename({
-          suffix: ".min",
-        })
-      )
-      .pipe(sourcemaps.write("."))
-      .pipe(gulp.dest(paths.scripts.output))
-      .pipe(
-        browserSync.reload({
-          stream: true,
-        })
-      );
+// Compile, autoprefix & minify SASS files
+const buildStyles = () => {
+  return src(paths.styles.input)
+    .pipe(plumber())
+    .pipe(gulpif(process.env.NODE_ENV === "development", sourcemaps.init()))
+    .pipe(sass(options.styles.scss))
+    .pipe(postcss([autoprefixer(options.styles.autoprefixer)]))
+    .pipe(header(banner, { pkg: pkg }))
+    .pipe(dest(paths.styles.output))
+    .pipe(cleanCSS(options.styles.minify))
+    .pipe(header(banner, { pkg: pkg }))
+    .pipe(rename(options.styles.rename))
+    .pipe(gulpif(process.env.NODE_ENV === "development", sourcemaps.write(".")))
+    .pipe(dest(paths.styles.output));
+};
 
-    cb();
-  })
-);
-
-/**
- * Task: 'sprites'
- *
- * Convert a set of images into a spritesheet and CSS variables
- */
-gulp.task(
-  "sprites",
-  gulp.series(function (cb) {
-    var spriteData = gulp.src("src/sprites/images/*.png").pipe(
-      spritesmith({
-        imgName: "s.png",
-        cssName: "_sprites.scss",
-        cssFormat: "scss",
-        cssTemplate: "src/sprites/scss.template.handlebars",
-        imgPath: "../images/s.png",
-        padding: 3,
-        imgOpts: {
-          quality: 100,
-        },
+// Compile Twig files to HTML
+const buildTemplates = () => {
+  return src(paths.templates.input)
+    .pipe(plumber())
+    .pipe(
+      data((file) => {
+        return JSON.parse(fs.readFileSync(options.templates.data));
       })
-    );
+    )
+    .pipe(twig())
+    .pipe(dest(paths.templates.output));
+};
 
-    spriteData.img.pipe(gulp.dest("src/sprites/"));
-    spriteData.css.pipe(gulp.dest("src/sprites/"));
-
-    // Callback
-    cb();
-  })
-);
-
-/**
- * Task: 'styles'
- *
- * Compile, autoprefix & minify SASS files
- */
-gulp.task(
-  "styles",
-  gulp.series(function (cb) {
-    gulp
-      .src(paths.styles.input)
-      .pipe(plumber())
-      .pipe(sourcemaps.init())
-      .pipe(
-        sass({
-          outputStyle: "expanded",
-        })
-      )
-      .pipe(
-        postcss([
-          autoprefixer({
-            browsers: pkg.browserlist,
-            cascade: false,
-          }),
-        ])
-      )
-      .pipe(header(banner, { pkg: pkg }))
-      .pipe(gulp.dest(paths.styles.output))
-      .pipe(
-        cleanCSS({
-          level: {
-            1: {
-              specialComments: 0,
-            },
-          },
-        })
-      )
-      .pipe(header(banner, { pkg: pkg }))
-      .pipe(
-        rename({
-          suffix: ".min",
-        })
-      )
-      .pipe(sourcemaps.write("."))
-      .pipe(gulp.dest(paths.styles.output))
-      .pipe(
-        browserSync.reload({
-          stream: true,
-        })
-      );
-
-    // Callback
-    cb();
-  })
-);
-
-/**
- * Task: 'templates'
- *
- * Compile Twig files to HTML
- */
-gulp.task(
-  "templates",
-  gulp.series(function (cb) {
-    gulp
-      .src(paths.templates.input)
-      .pipe(
-        plumber({
-          handleError: function (err) {
-            console.log(err);
-            this.emit("end");
-          },
-        })
-      )
-      .pipe(
-        data(function (file) {
-          return JSON.parse(fs.readFileSync("website.json"));
-        })
-      )
-      .pipe(twig())
-      .pipe(gulp.dest(paths.templates.output))
-      .pipe(
-        browserSync.reload({
-          stream: true,
-        })
-      );
-
-    // Callback
-    cb();
-  })
-);
-
-/**
- * Task: 'serve'
- *
- * Watch for changes to the 'src' directory
- */
-gulp.task("serve", function () {
+// Watch for changes to the source directory
+const serveDist = (cb) => {
   browserSync.init({
     server: {
       baseDir: paths.server.root,
     },
   });
-});
+  cb();
+};
 
-/**
- * Task: 'build'
- *
- * Run all tasks
- */
-gulp.task("build", gulp.parallel(["images", "scripts", "styles", "templates"]));
+// Reload the browser when files change
+const reloadBrowser = (cb) => {
+  browserSync.reload();
+  cb();
+};
 
-/**
- * Task: 'watch'
- *
- * Watch all file changes
- */
-gulp.task("watch", function () {
-  gulp.watch(paths.images.watch, gulp.series("images"));
-  gulp.watch(paths.scripts.watch, gulp.series("scripts"));
-  gulp.watch(paths.styles.watch, gulp.series("styles"));
-  gulp.watch(paths.templates.watch, gulp.series("templates"));
-});
+// Watch all file changes
+const watchSource = () => {
+  watch(paths.images.watch, series(buildImages, reloadBrowser));
+  watch(paths.scripts.watch, series(buildScripts, reloadBrowser));
+  watch(paths.styles.watch, series(buildStyles, reloadBrowser));
+  watch(paths.templates.watch, series(buildTemplates, reloadBrowser));
+};
 
-// Default Task
-gulp.task(
-  "default",
-  gulp.series(["clean", "build", gulp.parallel("watch", "serve")])
+// Archive task
+exports.archive = archiveDist;
+
+// Clean task
+exports.clean = cleanDist;
+
+// Sprites task
+exports.sprites = buildSprites;
+
+// Build task
+exports.build = series(
+  parallel(buildScripts, buildStyles, buildTemplates),
+  buildImages
 );
+
+// Watch Task
+exports.watch = watchSource;
+
+// Default task
+exports.default = series(exports.build, serveDist, watchSource);
