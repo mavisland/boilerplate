@@ -52,6 +52,6 @@
     "gulp-twig": "^1.2.0",
     "gulp-zip": "^5.1.0",
     "gulp.spritesmith": "^6.11.0",
-    "node-sass": "^5.0.0"
+    "node-sass": "^6.0.0"
   }
 }
