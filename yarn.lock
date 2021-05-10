@@ -14,6 +14,11 @@
   resolved "https://registry.yarnpkg.com/@babel/compat-data/-/compat-data-7.14.0.tgz#a901128bce2ad02565df95e6ecbf195cf9465919"
   integrity sha512-vu9V3uMM/1o5Hl5OekMUowo3FqXLJSw+s+66nt0fSWVWTtmosdzn45JHOB3cPtZoe6CTBDzvSw0RdOY85Q37+Q==
 
+"@babel/compat-data@^7.14.0":
+  version "7.14.0"
+  resolved "https://registry.yarnpkg.com/@babel/compat-data/-/compat-data-7.14.0.tgz#a901128bce2ad02565df95e6ecbf195cf9465919"
+  integrity sha512-vu9V3uMM/1o5Hl5OekMUowo3FqXLJSw+s+66nt0fSWVWTtmosdzn45JHOB3cPtZoe6CTBDzvSw0RdOY85Q37+Q==
+
 "@babel/core@^7.14.0":
   version "7.14.0"
   resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.14.0.tgz#47299ff3ec8d111b493f1a9d04bf88c04e728d88"
@@ -3883,17 +3888,17 @@ gulp-zip@^5.1.0:
     vinyl "^2.1.0"
     yazl "^2.5.1"
 
-gulp.spritesmith@^6.11.0:
-  version "6.11.0"
-  resolved "https://registry.yarnpkg.com/gulp.spritesmith/-/gulp.spritesmith-6.11.0.tgz#2424245337ed1d678de475b3e73fc09610d66c13"
-  integrity sha512-yvBM96EGU0dEOo7XV3H7wfYgw9phhZcGl6K0qVtgGaMvzvW9TtRuFjbFMmWf3EUHKLtiKRjq4naaYnKW6bZ62g==
+gulp.spritesmith@^6.12.1:
+  version "6.12.1"
+  resolved "https://registry.yarnpkg.com/gulp.spritesmith/-/gulp.spritesmith-6.12.1.tgz#8fc040bd3eeb6cd2d22da5a2ee571d57b71b534e"
+  integrity sha512-Z1dDBrtOL1IhOgVLALj8d/Hh03KFkgQW9jy7oLePhgBwVjtJMUrGAYFqDQwgdKG8PUDdExpJcGujKs7MMXbUyQ==
   dependencies:
     async "~2.1.5"
     minimatch "~3.0.3"
     spritesheet-templates "^10.3.0"
     spritesmith "^3.4.0"
     through2 "~2.0.3"
-    underscore "~1.8.3"
+    underscore "~1.13.1"
     url2 "~1.0.4"
     vinyl "~2.1.0"
 
@@ -7584,15 +7589,15 @@ underscore.string@~3.3.0:
     sprintf-js "^1.0.3"
     util-deprecate "^1.0.2"
 
+underscore@~1.13.1:
+  version "1.13.1"
+  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.13.1.tgz#0c1c6bd2df54b6b69f2314066d65b6cde6fcf9d1"
+  integrity sha512-hzSoAVtJF+3ZtiFX0VgfFPHEDRm7Y/QPjGyNo4TVdnDTdft3tr8hEkD25a1jC+TjTuE7tkHGKkhwCgs9dgBB2g==
+
 underscore@~1.4.2:
   version "1.4.4"
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.4.4.tgz#61a6a32010622afa07963bf325203cf12239d604"
   integrity sha1-YaajIBBiKvoHljvzJSA88SI51gQ=
-
-underscore@~1.8.3:
-  version "1.8.3"
-  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.8.3.tgz#4f3fb53b106e6097fcf9cb4109f2a5e9bdfa5022"
-  integrity sha1-Tz+1OxBuYJf8+ctBCfKl6b36UCI=
 
 undertaker-registry@^1.0.0:
   version "1.0.1"
