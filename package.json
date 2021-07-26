@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.7",
-    "@babel/core": "^7.14.6",
+    "@babel/core": "^7.14.8",
     "autoprefixer": "^9.7.6",
     "browser-sync": "^2.27.4",
     "cross-env": "^7.0.3",
