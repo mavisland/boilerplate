@@ -16,8 +16,7 @@ const pkg = require("./package.json");
 const plumber = require("gulp-plumber");
 const postcss = require("gulp-postcss");
 const rename = require("gulp-rename");
-const sass = require("gulp-sass");
-sass.compiler = require("node-sass");
+const sass = require("gulp-sass")(require("node-sass"));
 const sourcemaps = require("gulp-sourcemaps");
 const spritesmith = require("gulp.spritesmith");
 const terser = require("gulp-terser");
@@ -32,7 +31,7 @@ const banner = [
   " * @link <%= pkg.homepage %>",
   " * @license <%= pkg.license %>",
   " */",
-  ""
+  "",
 ].join("\n");
 
 // Get Timestamp
@@ -50,9 +49,7 @@ const getTimestamp = () => {
 // Archive pre-existing content from output folders
 const archiveDist = (cb) => {
   src(config.archive.input)
-    .pipe(
-      zip(pkg.name + "_v" + pkg.version + "-build_" + getTimestamp() + ".zip")
-    )
+    .pipe(zip(pkg.name + "_v" + pkg.version + "-build_" + getTimestamp() + ".zip"))
     .pipe(dest(config.archive.output));
   return cb();
 };
@@ -67,16 +64,18 @@ const cleanDist = (cb) => {
 const buildImages = () => {
   return src(config.images.input)
     .pipe(plumber())
-    .pipe(imagemin({
-      interlaced: true,
-      progressive: true,
-      optimizationLevel: 5,
-      svgoPlugins: [
-        {
-          removeViewBox: true
-        }
-      ]
-    }))
+    .pipe(
+      imagemin({
+        interlaced: true,
+        progressive: true,
+        optimizationLevel: 5,
+        svgoPlugins: [
+          {
+            removeViewBox: true,
+          },
+        ],
+      })
+    )
     .pipe(dest(config.images.output));
 };
 
@@ -85,19 +84,25 @@ const buildScripts = () => {
   return src(config.scripts.input)
     .pipe(plumber())
     .pipe(gulpif(process.env.NODE_ENV === "development", sourcemaps.init()))
-    .pipe(babel({
-      presets: ["@babel/env"]
-    }))
+    .pipe(
+      babel({
+        presets: ["@babel/env"],
+      })
+    )
     .pipe(concat("app.js"))
     .pipe(header(banner, { pkg: pkg }))
     .pipe(dest(config.scripts.output))
-    .pipe(terser({
-      keep_fnames: true,
-      mangle: false
-    }))
-    .pipe(rename({
-      suffix: ".min"
-    }))
+    .pipe(
+      terser({
+        keep_fnames: true,
+        mangle: false,
+      })
+    )
+    .pipe(
+      rename({
+        suffix: ".min",
+      })
+    )
     .pipe(gulpif(process.env.NODE_ENV === "development", sourcemaps.write(".")))
     .pipe(dest(config.scripts.output));
 };
@@ -107,17 +112,19 @@ const buildSprites = (cb) => {
   const spriteData = gulp
     .src(config.sprites.input)
     .pipe(plumber())
-    .pipe(spritesmith({
-      imgName: "s.png",
-      cssName: "_sprites.scss",
-      cssFormat: "scss",
-      cssTemplate: "src/sprites/scss.template.handlebars",
-      imgPath: "../images/s.png",
-      padding: 3,
-      imgOpts: {
-        quality: 100
-      }
-    }));
+    .pipe(
+      spritesmith({
+        imgName: "s.png",
+        cssName: "_sprites.scss",
+        cssFormat: "scss",
+        cssTemplate: "src/sprites/scss.template.handlebars",
+        imgPath: "../images/s.png",
+        padding: 3,
+        imgOpts: {
+          quality: 100,
+        },
+      })
+    );
 
   spriteData.img.pipe(dest(config.sprites.output));
   spriteData.css.pipe(dest(config.sprites.output));
@@ -130,23 +137,29 @@ const buildStyles = () => {
   return src(config.styles.input)
     .pipe(plumber())
     .pipe(gulpif(process.env.NODE_ENV === "development", sourcemaps.init()))
-    .pipe(sass({
-      outputStyle: "expanded"
-    }))
+    .pipe(
+      sass({
+        outputStyle: "expanded",
+      })
+    )
     .pipe(postcss([autoprefixer()]))
     .pipe(header(banner, { pkg: pkg }))
     .pipe(dest(config.styles.output))
-    .pipe(cleanCSS({
-      level: {
-        1: {
-          specialComments: 0
-        }
-      }
-    }))
+    .pipe(
+      cleanCSS({
+        level: {
+          1: {
+            specialComments: 0,
+          },
+        },
+      })
+    )
     .pipe(header(banner, { pkg: pkg }))
-    .pipe(rename({
-      suffix: ".min"
-    }))
+    .pipe(
+      rename({
+        suffix: ".min",
+      })
+    )
     .pipe(gulpif(process.env.NODE_ENV === "development", sourcemaps.write(".")))
     .pipe(dest(config.styles.output));
 };
@@ -168,8 +181,8 @@ const buildTemplates = () => {
 const serveDist = (cb) => {
   browserSync.init({
     server: {
-      baseDir: config.server.root
-    }
+      baseDir: config.server.root,
+    },
   });
   cb();
 };
@@ -198,10 +211,7 @@ exports.clean = cleanDist;
 exports.sprites = buildSprites;
 
 // Build task
-exports.build = series(
-  parallel(buildScripts, buildStyles, buildTemplates),
-  buildImages
-);
+exports.build = series(parallel(buildScripts, buildStyles, buildTemplates), buildImages);
 
 // Watch Task
 exports.watch = watchSource;
