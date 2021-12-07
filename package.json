@@ -31,7 +31,7 @@
   "devDependencies": {
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
-    "autoprefixer": "^9.8.8",
+    "autoprefixer": "^10.4.0",
     "browser-sync": "^2.27.7",
     "cross-env": "^7.0.3",
     "del": "^6.0.0",
@@ -52,6 +52,7 @@
     "gulp-twig": "^1.2.0",
     "gulp-zip": "^5.1.0",
     "gulp.spritesmith": "^6.12.1",
-    "node-sass": "^6.0.1"
+    "node-sass": "^7.0.0",
+    "postcss": "^8.4.4"
   }
 }
