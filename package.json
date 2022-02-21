@@ -52,7 +52,7 @@
     "gulp-twig": "^1.2.0",
     "gulp-zip": "^5.1.0",
     "gulp.spritesmith": "^6.12.1",
-    "node-sass": "^7.0.0",
+    "node-sass": "^7.0.1",
     "postcss": "^8.4.5"
   }
 }
