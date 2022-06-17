@@ -52,6 +52,7 @@
     "gulp-twig": "^1.2.0",
     "gulp-zip": "^5.1.0",
     "gulp.spritesmith": "^6.13.0",
-    "postcss": "^8.4.14"
+    "postcss": "^8.4.14",
+    "sass": "^1.52.3"
   }
 }
