@@ -53,6 +53,6 @@
     "gulp-zip": "^5.1.0",
     "gulp.spritesmith": "^6.13.0",
     "postcss": "^8.4.14",
-    "sass": "^1.53.0"
+    "sass": "^1.54.0"
   }
 }
