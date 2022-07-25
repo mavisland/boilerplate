@@ -29,7 +29,7 @@
     "url": "https://github.com/mavisland/boilerplate/issues"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.5",
+    "@babel/core": "^7.18.9",
     "@babel/preset-env": "^7.18.2",
     "autoprefixer": "^10.4.7",
     "browser-sync": "^2.27.10",
