@@ -23,8 +23,9 @@ module.exports = {
     watch: "src/styles/**/*.css",
   },
   templates: {
+    content: "boilerplate.content.json",
     input: "src/templates/*.twig",
     output: "dist/",
-    watch: ["src/templates/**/*.twig", "website.json"],
+    watch: "src/templates/**/*.twig",
   },
 };
