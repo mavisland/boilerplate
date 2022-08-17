@@ -1,21 +1,24 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>{{ title }}</title>
-    <meta name="description" content="{{ desc }}">
-    <meta name="author" content="{{ author }}">
-    <meta name="theme-color" content="#ffb909">
-    <link rel="apple-touch-icon" href="images/favicon.png">
-    <link rel="shortcut icon" href="images/favicon.png">
-    <link rel="stylesheet" href="css/style.min.css">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{{ title }}</title>
+	<meta name="description" content="{{ desc }}">
+	<meta name="author" content="{{ author }}">
+	<meta name="theme-color" content="#ffb909">
+	<link rel="apple-touch-icon" href="images/favicon.png">
+	<link rel="shortcut icon" href="images/favicon.png">
+	<link rel="stylesheet" href="css/style.min.css">
 </head>
 <body>
-{% include "../partials/header.twig" %}
-{% block content %}{% endblock %}
-{% include "../partials/footer.twig" %}
-    <script src="js/app.min.js"></script>
+	<div id="top" class="page" role="document">
+		{% include "../partials/header.twig" %}
+		<main role="main">
+			{% block content %}{% endblock %}
+		</main>
+		{% include "../partials/footer.twig" %}
+	</div>
+	<script src="js/app.min.js"></script>
 </body>
 </html>
