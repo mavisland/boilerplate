@@ -18,9 +18,9 @@ module.exports = {
     root: "dist/",
   },
   styles: {
-    input: "src/styles/*.scss",
+    input: "src/styles/*.css",
     output: "dist/css",
-    watch: "src/styles/**/*.scss",
+    watch: "src/styles/**/*.css",
   },
   templates: {
     input: "src/templates/*.twig",

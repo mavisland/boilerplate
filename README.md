@@ -100,9 +100,9 @@ const paths = {
     root: "dist/",
   },
   styles: {
-    input: "src/scss/*.scss",
+    input: "src/scss/*.css",
     output: "dist/css",
-    watch: "src/scss/**/*.scss",
+    watch: "src/scss/**/*.css",
   },
   templates: {
     input: "src/html/*.twig",
