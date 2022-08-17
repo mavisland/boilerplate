@@ -17,7 +17,6 @@
     "clean": "gulp clean",
     "dev": "npm run clean && npm run start",
     "build": "gulp build",
-    "sprites": "gulp sprites",
     "archive": "npm run clean && npm run build && gulp archive"
   },
   "repository": {

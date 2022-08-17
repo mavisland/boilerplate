@@ -60,10 +60,6 @@ Put your `Twig` templates in the `src/html` directory. Files placed directly in 
 
 Place GIF, JPEG, PNG and SVG images in the `src/images` directory. Images will be optimized with `imagemin` plugins and compiled into `dist/images`.
 
-### Sprites
-
-Converts a series of images in the `src/sprites/image` folder to a sprite sheet and CSS styles.
-
 ## Options
 
 ### Tasks
@@ -75,7 +71,6 @@ Converts a series of images in the `src/sprites/image` folder to a sprite sheet 
 | images    | Optimise GIF, JPEG, PNG and SVG images          |
 | serve     | Watch for changes to the `src` directory        |
 | scripts   | Concanate & minify JavaScript files             |
-| sprites   | Your images, icons, et al convert a spritesheet |
 | styles    | Compile, autoprefix & minify SASS files         |
 | templates | Render Twig templates                           |
 | watch     | Watch all file changes                          |
@@ -92,9 +87,9 @@ const paths = {
     output: "build/",
   },
   images: {
-    input: ["src/images/*.{gif,ico,jpg,png,svg}", "src/sprites/s.png"],
+    input: ["src/images/*.{gif,ico,jpg,png,svg}"],
     output: "dist/images",
-    watch: ["src/images/*.{gif,ico,jpg,png,svg}", "src/sprites/s.png"],
+    watch: ["src/images/*.{gif,ico,jpg,png,svg}"],
   },
   scripts: {
     input: ["src/js/plugins.js", "src/js/main.js"],
@@ -103,10 +98,6 @@ const paths = {
   },
   server: {
     root: "dist/",
-  },
-  sprites: {
-    input: "src/sprites/**/*.svg",
-    output: "dist/images",
   },
   styles: {
     input: "src/scss/*.scss",

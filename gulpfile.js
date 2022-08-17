@@ -18,7 +18,6 @@ const postcss = require("gulp-postcss");
 const rename = require("gulp-rename");
 const sass = require("gulp-sass")(require("sass"));
 const sourcemaps = require("gulp-sourcemaps");
-const spritesmith = require("gulp.spritesmith");
 const terser = require("gulp-terser");
 const twig = require("gulp-twig");
 const zip = require("gulp-zip");
@@ -107,31 +106,6 @@ const buildScripts = () => {
     .pipe(dest(config.scripts.output));
 };
 
-// Convert a set of images into a spritesheet and CSS variables
-const buildSprites = (cb) => {
-  const spriteData = gulp
-    .src(config.sprites.input)
-    .pipe(plumber())
-    .pipe(
-      spritesmith({
-        imgName: "s.png",
-        cssName: "_sprites.scss",
-        cssFormat: "scss",
-        cssTemplate: "src/sprites/scss.template.handlebars",
-        imgPath: "../images/s.png",
-        padding: 3,
-        imgOpts: {
-          quality: 100,
-        },
-      })
-    );
-
-  spriteData.img.pipe(dest(config.sprites.output));
-  spriteData.css.pipe(dest(config.sprites.output));
-
-  return cb();
-};
-
 // Compile, autoprefix & minify SASS files
 const buildStyles = () => {
   return src(config.styles.input)
@@ -206,9 +180,6 @@ exports.archive = archiveDist;
 
 // Clean task
 exports.clean = cleanDist;
-
-// Sprites task
-exports.sprites = buildSprites;
 
 // Build task
 exports.build = series(parallel(buildScripts, buildStyles, buildTemplates), buildImages);
