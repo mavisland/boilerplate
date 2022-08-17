@@ -11,3 +11,5 @@ insert_final_newline = true
 
 [*.{html,twig}]
 indent_size = 4
+indent_style = tab
+insert_final_newline = false

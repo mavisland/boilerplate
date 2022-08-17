@@ -1,34 +1,31 @@
 module.exports = {
   archive: {
     input: "dist/**",
-    output: "build/"
+    output: "build/",
   },
   clean: ["dist/"],
   images: {
     input: "src/images/*",
     output: "dist/images",
-    watch: "src/images/*"
+    watch: "src/images/*",
   },
   scripts: {
     input: "src/scripts/app.js",
     output: "dist/js",
-    watch: "src/scripts/**/*.js"
+    watch: "src/scripts/**/*.js",
   },
   server: {
-    root: "dist/"
-  },
-  sprites: {
-    input: "src/sprites/images/*.png",
-    output: "src/images/"
+    root: "dist/",
   },
   styles: {
-    input: "src/styles/*.scss",
+    input: "src/styles/*.css",
     output: "dist/css",
-    watch: "src/styles/**/*.scss"
+    watch: "src/styles/**/*.css",
   },
   templates: {
+    content: "boilerplate.content.json",
     input: "src/templates/*.twig",
     output: "dist/",
-    watch: ["src/templates/**/*.twig", "website.json"]
-  }
+    watch: "src/templates/**/*.twig",
+  },
 };

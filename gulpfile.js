@@ -1,26 +1,41 @@
+//
+// Gulp.js Configurations
+//
+
 // Packages
 const { src, dest, series, parallel, watch } = require("gulp");
+
+// Configuration
+const config = require("./boilerplate.config");
+const twconfig = require("./tailwind.config");
+
+// Style related packages
+const postcss = require("gulp-postcss");
+const tailwindcss = require("tailwindcss");
 const autoprefixer = require("autoprefixer");
-const browserSync = require("browser-sync").create();
+const cssnano = require("cssnano");
+const sourcemaps = require("gulp-sourcemaps");
+
+// JavaScript related packages
+const terser = require("gulp-terser");
 const babel = require("gulp-babel");
-const del = require("del");
-const fs = require("fs");
-const cleanCSS = require("gulp-clean-css");
-const concat = require("gulp-concat");
-const config = require("./config");
+
+// Template related packages
+const twig = require("gulp-twig");
 const data = require("gulp-data");
+
+// Server related packages
+const browserSync = require("browser-sync").create();
+
+// Utility packages
+const concat = require("gulp-concat");
+const fs = require("fs");
+const del = require("del");
 const gulpif = require("gulp-if");
 const header = require("gulp-header");
-const imagemin = require("gulp-imagemin");
 const pkg = require("./package.json");
 const plumber = require("gulp-plumber");
-const postcss = require("gulp-postcss");
 const rename = require("gulp-rename");
-const sass = require("gulp-sass")(require("sass"));
-const sourcemaps = require("gulp-sourcemaps");
-const spritesmith = require("gulp.spritesmith");
-const terser = require("gulp-terser");
-const twig = require("gulp-twig");
 const zip = require("gulp-zip");
 
 // File Banner
@@ -62,21 +77,7 @@ const cleanDist = (cb) => {
 
 // Optimise GIF, JPEG, PNG and SVG images
 const buildImages = () => {
-  return src(config.images.input)
-    .pipe(plumber())
-    .pipe(
-      imagemin({
-        interlaced: true,
-        progressive: true,
-        optimizationLevel: 5,
-        svgoPlugins: [
-          {
-            removeViewBox: true,
-          },
-        ],
-      })
-    )
-    .pipe(dest(config.images.output));
+  return src(config.images.input).pipe(dest(config.images.output));
 };
 
 // Concanate & minify JavaScript files
@@ -107,52 +108,30 @@ const buildScripts = () => {
     .pipe(dest(config.scripts.output));
 };
 
-// Convert a set of images into a spritesheet and CSS variables
-const buildSprites = (cb) => {
-  const spriteData = gulp
-    .src(config.sprites.input)
-    .pipe(plumber())
-    .pipe(
-      spritesmith({
-        imgName: "s.png",
-        cssName: "_sprites.scss",
-        cssFormat: "scss",
-        cssTemplate: "src/sprites/scss.template.handlebars",
-        imgPath: "../images/s.png",
-        padding: 3,
-        imgOpts: {
-          quality: 100,
-        },
-      })
-    );
-
-  spriteData.img.pipe(dest(config.sprites.output));
-  spriteData.css.pipe(dest(config.sprites.output));
-
-  return cb();
-};
-
 // Compile, autoprefix & minify SASS files
 const buildStyles = () => {
   return src(config.styles.input)
     .pipe(plumber())
     .pipe(gulpif(process.env.NODE_ENV === "development", sourcemaps.init()))
     .pipe(
-      sass({
-        outputStyle: "expanded",
-      })
+      postcss([
+        tailwindcss(twconfig),
+        autoprefixer({
+          cascade: true,
+          remove: true,
+        }),
+      ])
     )
-    .pipe(postcss([autoprefixer()]))
     .pipe(header(banner, { pkg: pkg }))
     .pipe(dest(config.styles.output))
     .pipe(
-      cleanCSS({
-        level: {
-          1: {
-            specialComments: 0,
+      postcss([
+        cssnano({
+          discardComments: {
+            removeAll: true,
           },
-        },
-      })
+        }),
+      ])
     )
     .pipe(header(banner, { pkg: pkg }))
     .pipe(
@@ -170,7 +149,7 @@ const buildTemplates = () => {
     .pipe(plumber())
     .pipe(
       data((file) => {
-        return JSON.parse(fs.readFileSync("website.json"));
+        return JSON.parse(fs.readFileSync(config.templates.content));
       })
     )
     .pipe(twig())
@@ -198,7 +177,7 @@ const watchSource = () => {
   watch(config.images.watch, series(buildImages, reloadBrowser));
   watch(config.scripts.watch, series(buildScripts, reloadBrowser));
   watch(config.styles.watch, series(buildStyles, reloadBrowser));
-  watch(config.templates.watch, series(buildTemplates, reloadBrowser));
+  watch([config.templates.content, config.templates.watch], series(buildTemplates, reloadBrowser));
 };
 
 // Archive task
@@ -206,9 +185,6 @@ exports.archive = archiveDist;
 
 // Clean task
 exports.clean = cleanDist;
-
-// Sprites task
-exports.sprites = buildSprites;
 
 // Build task
 exports.build = series(parallel(buildScripts, buildStyles, buildTemplates), buildImages);
